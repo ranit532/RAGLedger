@@ -1,0 +1,18 @@
+# AWS Configuration
+aws_region  = "us-east-1"
+environment = "dev"
+project_name = "ragledger"
+
+# OpenAI Configuration
+openai_api_key     = "your-openai-api-key-here"
+openai_model       = "gpt-4o-mini"
+openai_embed_model = "text-embedding-3-large"
+
+# Pinecone Configuration
+pinecone_api_key    = "your-pinecone-api-key-here"
+pinecone_environment = "us-east-1-aws"
+pinecone_index      = "ragledger"
+
+# GitLab Configuration
+gitlab_repo_url = "https://gitlab.com/your-org/ragledger.git"
+
