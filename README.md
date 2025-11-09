@@ -140,7 +140,7 @@ Query → Embedding → Pinecone Search → Context Retrieval → GPT-4 → Answ
 - ✅ AWS S3 for document storage
 - ✅ AWS Secrets Manager for secure key management
 - ✅ EKS for scalable backend deployment
-- ✅ GitLab CI/CD pipeline
+- ✅ GitHub Actions CI/CD pipeline
 
 ### Security
 - ✅ AWS Secrets Manager integration
@@ -183,7 +183,7 @@ Query → Embedding → Pinecone Search → Context Retrieval → GPT-4 → Answ
   - CodeBuild - CI/CD
 - **Terraform** - Infrastructure as code
 - **Docker** - Containerization
-- **GitLab CI/CD** - Continuous integration
+- **GitHub Actions** - Continuous integration
 
 ---
 
@@ -324,16 +324,21 @@ aws secretsmanager create-secret \
 
 ### CI/CD Setup
 
-1. Configure GitLab CI/CD variables:
-   - `AWS_ACCESS_KEY_ID`
-   - `AWS_SECRET_ACCESS_KEY`
-   - `AWS_ACCOUNT_ID`
-   - `ECR_REGISTRY`
-   - `ECR_REPOSITORY_BACKEND`
-   - `ECR_REPOSITORY_FRONTEND`
-   - `S3_BUCKET_FRONTEND`
+1. Configure GitHub Secrets:
+   - Go to repository Settings → Secrets and variables → Actions
+   - Add the following secrets:
+     - `AWS_ACCESS_KEY_ID`
+     - `AWS_SECRET_ACCESS_KEY`
+     - `AWS_ACCOUNT_ID`
+     - `ECR_REGISTRY`
+     - `ECR_REPOSITORY_BACKEND`
+     - `ECR_REPOSITORY_FRONTEND`
+     - `S3_BUCKET_FRONTEND`
+     - `EKS_CLUSTER_NAME`
+     - `OPENAI_API_KEY`
+     - `PINECONE_API_KEY`
 
-2. Push to GitLab to trigger pipeline
+2. Push to GitHub to trigger workflow
 
 ---
 
@@ -369,7 +374,7 @@ aws secretsmanager create-secret \
 
 ### Using CI/CD Pipeline
 
-The GitLab CI/CD pipeline automatically:
+The GitHub Actions workflow automatically:
 1. Tests frontend and backend
 2. Builds Docker images
 3. Pushes to ECR
@@ -500,7 +505,7 @@ RAGLedger/
 ├── infra/                 # Infrastructure as code
 │   └── terraform/        # Terraform configurations
 ├── scripts/               # Utility scripts
-├── .gitlab-ci.yml        # CI/CD pipeline
+├── .github/workflows/    # GitHub Actions workflows
 └── README.md
 ```
 
@@ -589,7 +594,7 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 
 ## 📞 Support
 
-For issues, questions, or contributions, please open an issue on the GitLab repository.
+For issues, questions, or contributions, please open an issue on the GitHub repository.
 
 ---
 

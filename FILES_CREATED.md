@@ -68,7 +68,7 @@
 ### Configuration Files
 - `.env.example` - Environment variables template
 - `.gitignore` - Git ignore rules
-- `.gitlab-ci.yml` - GitLab CI/CD pipeline
+- `.github/workflows/ci-cd.yml` - GitHub Actions CI/CD workflow
 - `.prettierignore` - Prettier ignore rules
 - `docker-compose.yml` - Docker Compose configuration
 - `Makefile` - Make commands

@@ -1,65 +1,104 @@
-# CodeBuild project for CI/CD
-resource "aws_codebuild_project" "ragledger" {
-  name          = "${var.project_name}-build-${var.environment}"
-  description   = "Build project for RAGLedger"
-  build_timeout = 60
-  service_role  = aws_iam_role.cicd_role.arn
+# IAM Role for GitHub Actions (OIDC-based authentication)
+# This allows GitHub Actions to assume a role in AWS without storing credentials
+resource "aws_iam_role" "github_actions_role" {
+  name = "${var.project_name}-github-actions-role-${var.environment}"
 
-  artifacts {
-    type = "NO_ARTIFACTS"
-  }
-
-  environment {
-    compute_type                = "BUILD_GENERAL1_SMALL"
-    image                       = "aws/codebuild/standard:5.0"
-    type                        = "LINUX_CONTAINER"
-    image_pull_credentials_type = "CODEBUILD"
-
-    environment_variable {
-      name  = "AWS_DEFAULT_REGION"
-      value = var.aws_region
-    }
-
-    environment_variable {
-      name  = "AWS_ACCOUNT_ID"
-      value = data.aws_caller_identity.current.account_id
-    }
-
-    environment_variable {
-      name  = "ECR_REPOSITORY_BACKEND"
-      value = aws_ecr_repository.backend.name
-    }
-
-    environment_variable {
-      name  = "ECR_REPOSITORY_FRONTEND"
-      value = aws_ecr_repository.frontend.name
-    }
-
-    environment_variable {
-      name  = "S3_BUCKET_FRONTEND"
-      value = aws_s3_bucket.frontend.id
-    }
-  }
-
-  source {
-    type            = "GITLAB"
-    location        = var.gitlab_repo_url
-    git_clone_depth = 1
-  }
+  assume_role_policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Principal = {
+          Federated = "arn:aws:iam::${data.aws_caller_identity.current.account_id}:oidc-provider/token.actions.githubusercontent.com"
+        }
+        Action = "sts:AssumeRoleWithWebIdentity"
+        Condition = {
+          StringEquals = {
+            "token.actions.githubusercontent.com:aud" = "sts.amazonaws.com"
+          }
+          StringLike = {
+            "token.actions.githubusercontent.com:sub" = "repo:${var.github_repo_owner}/${var.github_repo_name}:*"
+          }
+        }
+      }
+    ]
+  })
 
   tags = {
-    Name = "${var.project_name}-build-${var.environment}"
+    Name = "${var.project_name}-github-actions-role-${var.environment}"
   }
+}
+
+# IAM Policy for GitHub Actions
+resource "aws_iam_role_policy" "github_actions_policy" {
+  name = "${var.project_name}-github-actions-policy-${var.environment}"
+  role = aws_iam_role.github_actions_role.id
+
+  policy = jsonencode({
+    Version = "2012-10-17"
+    Statement = [
+      {
+        Effect = "Allow"
+        Action = [
+          "ecr:GetAuthorizationToken",
+          "ecr:BatchCheckLayerAvailability",
+          "ecr:GetDownloadUrlForLayer",
+          "ecr:BatchGetImage",
+          "ecr:PutImage"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "s3:GetObject",
+          "s3:PutObject",
+          "s3:DeleteObject",
+          "s3:ListBucket"
+        ]
+        Resource = [
+          aws_s3_bucket.frontend.arn,
+          "${aws_s3_bucket.frontend.arn}/*",
+          aws_s3_bucket.documents.arn,
+          "${aws_s3_bucket.documents.arn}/*"
+        ]
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "eks:DescribeCluster",
+          "eks:ListClusters",
+          "eks:UpdateKubeconfig"
+        ]
+        Resource = "*"
+      },
+      {
+        Effect = "Allow"
+        Action = [
+          "sts:AssumeRole"
+        ]
+        Resource = "*"
+      }
+    ]
+  })
 }
 
 data "aws_caller_identity" "current" {}
 
-variable "gitlab_repo_url" {
-  description = "GitLab repository URL"
+variable "github_repo_owner" {
+  description = "GitHub repository owner (username or organization)"
   type        = string
   default     = ""
 }
 
-# CodePipeline (optional - can be set up separately)
-# This is a basic structure - you may want to customize based on your needs
+variable "github_repo_name" {
+  description = "GitHub repository name"
+  type        = string
+  default     = "RAGLedger"
+}
+
+# Note: For GitHub Actions OIDC to work, you need to:
+# 1. Create an OIDC provider in AWS IAM (one-time setup)
+# 2. Configure GitHub Actions to use OIDC authentication
+# 3. Update the workflow file to use OIDC instead of access keys
 

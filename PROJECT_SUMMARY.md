@@ -50,7 +50,7 @@ RAGLedger/
 │   ├── ingest_local.py      # Local ingestion testing
 │   └── test_query.py        # Query testing
 │
-├── .gitlab-ci.yml           # GitLab CI/CD pipeline
+├── .github/workflows/        # GitHub Actions workflows
 ├── docker-compose.yml       # Docker Compose configuration
 ├── .env.example             # Environment variables template
 ├── .gitignore               # Git ignore rules
@@ -93,7 +93,7 @@ RAGLedger/
 - ✅ VPC and networking
 
 ### CI/CD
-- ✅ GitLab CI/CD pipeline
+- ✅ GitHub Actions CI/CD pipeline
 - ✅ Test stages (frontend/backend)
 - ✅ Build stages (Docker images)
 - ✅ Infrastructure planning
@@ -177,7 +177,8 @@ terraform apply
 - `project_name` - Project name
 - `openai_api_key` - OpenAI API key
 - `pinecone_api_key` - Pinecone API key
-- `gitlab_repo_url` - GitLab repository URL
+- `github_repo_owner` - GitHub repository owner
+- `github_repo_name` - GitHub repository name
 
 ## 🧪 Testing
 
@@ -210,9 +211,9 @@ python scripts/test_query.py "What is the customer's credit limit?"
    - Store secrets in AWS Secrets Manager
 
 2. **Configure CI/CD**
-   - Set up GitLab CI/CD variables
-   - Configure AWS credentials for CI/CD
-   - Test pipeline
+   - Set up GitHub Secrets
+   - Configure AWS credentials for GitHub Actions
+   - Test workflow
 
 3. **Deploy to AWS**
    - Build and push Docker images to ECR
@@ -245,7 +246,7 @@ python scripts/test_query.py "What is the customer's credit limit?"
 RAGLedger is a complete, production-ready RAG application with:
 - ✅ Full-stack implementation (React + FastAPI)
 - ✅ Cloud-native infrastructure (AWS + Terraform)
-- ✅ CI/CD pipeline (GitLab)
+- ✅ CI/CD pipeline (GitHub Actions)
 - ✅ Security best practices
 - ✅ Comprehensive documentation
 - ✅ Testing framework

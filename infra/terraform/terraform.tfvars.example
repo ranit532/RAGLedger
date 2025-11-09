@@ -13,6 +13,7 @@ pinecone_api_key    = "your-pinecone-api-key-here"
 pinecone_environment = "us-east-1-aws"
 pinecone_index      = "ragledger"
 
-# GitLab Configuration
-gitlab_repo_url = "https://gitlab.com/your-org/ragledger.git"
+# GitHub Configuration
+github_repo_owner = "your-username"
+github_repo_name = "RAGLedger"
 
